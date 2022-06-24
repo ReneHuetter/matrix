@@ -10,8 +10,8 @@ public class Matrix {
 
     public static void main(String[] args) {
         charset();
-        claerMatrix();
-        printMatrix(userInput());
+        claerMatrix(' ');
+        printMatrix(userInput(),userConf());
 
     }
 
@@ -260,37 +260,95 @@ public class Matrix {
         charset.put(' ',sp);
     }
 
-    private static void claerMatrix() {
+    private static void claerMatrix(char replacement) {
         for(int i=0; i< matrix.length; i++){
             for(int j=0; j< matrix[i].length; j++){
-                matrix[i][j] = ' ';
+                matrix[i][j] = replacement;
             }
         }
     }
 
-    private static void printMatrix(String word) {
+    private static void printMatrix(String word, boolean[] conf) {
         int z = 0;
-        char[] chars = word.toCharArray();
-        for (int i=0; i< chars.length; i++){
-            char[][] charArray = charset.get(chars[i]);
-            for(int j=0; j< charArray.length; j++) {
-                for (int k = 0; k < charArray[j].length; k++) {
-                    matrix[j][k + z * INDEX] = charArray[j][k];
-                }
-            }
-            z++;
+        if (conf[0]){
+            word=" " + word;
         }
+        char[] chars = word.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                char[][] buchstabe = charset.get(chars[i]);
+                if (conf[2]) {
+                    for (int x = 0; x < buchstabe[2].length; x++){
+                        buchstabe[2][x]='#';
+                    }
+                }
+                for (int j = 0; j < buchstabe.length; j++) {
+                    for (int k = 0; k < buchstabe[j].length; k++) {
+                        matrix[j][k + z * INDEX] = buchstabe[j][k];
+                    }
+                }
+                z++;
+            }
+        if (conf[1]){
+            flipPrintToScreen();
+        }else {
+            printToScreen(conf[0]);
+        }
+    }
+
+    private static void printToScreen(boolean inveres) {
         for(int i=0; i< matrix.length; i++){
             for(int j=0; j< matrix[i].length; j++){
+                char character = matrix[i][j];
+                if(inveres){
+                    if(character=='#'){
+                        character=' ';
+                    }else {
+                        character='#';
+                    }
+                }
+                System.out.print(character);
+            }
+            System.out.println();
+        }
+    }
+
+    private static void flipPrintToScreen(){
+        for (int i = matrix.length-1; i >= 0; i--){
+            for (int j = 0; j < matrix[i].length; j++){
                 System.out.print(matrix[i][j]);
             }
             System.out.println();
         }
     }
 
-    private static String userInput(){
+    private static String userInput() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Gib Bitte einen Text ein");
         return scanner.nextLine();
+    }
+
+    private static boolean[] userConf() {
+        boolean[] userConf = new boolean[3];
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Wollen sie den Text Invers anzeigen lassen ? 'Y' ja\n\tWenn nicht Beliebige tasten drücken");
+        String inveres = scanner.nextLine();
+        if (inveres.equalsIgnoreCase("y")){
+            userConf[0]=true;
+        }
+
+        System.out.println("Wollen sie den Text gespiegelt anzeigen lassen ? 'Y' ja\n\tWenn nicht Beliebige tasten drücken");
+        String mirror = scanner.nextLine();
+        if (mirror.equalsIgnoreCase("y")){
+            userConf[1]=true;
+        }
+
+        System.out.println("Wollen sie den Text Durchgestriechen anzeigen lassen ? 'Y' ja\n\tWenn nicht Beliebige tasten drücken");
+        String crossout = scanner.nextLine();
+        if(crossout.equalsIgnoreCase("y")){
+            userConf[2]=true;
+        }
+
+        return userConf;
     }
 }
